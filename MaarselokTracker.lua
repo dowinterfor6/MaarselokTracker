@@ -4,6 +4,15 @@ MaarselokTracker = {}
 -- Constant for use later
 MaarselokTracker.name = "MaarselokTracker"
 
+-- Restore saved position from savedVariables
+function MaarselokTracker:RestorePosition()
+  local left = self.savedVariables.left
+  local top = self.savedVariables.top
+
+  MaarselokTrackerIndicator:ClearAnchors()
+  MaarselokTrackerIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+end
+
 -- Initialize addon
 function MaarselokTracker:Initialize()
   -- Equivalent to MaarselokTracker.inCombat when using : to assign self
@@ -15,6 +24,16 @@ function MaarselokTracker:Initialize()
     EVENT_PLAYER_COMBAT_STATE, 
     self.OnPlayerCombatState
   )
+
+  -- Initialie saved variables
+  self.savedVariables = ZO_SavedVars:NewAccountWide(
+    "MaarselokTrackerSavedVariables", 
+    1, 
+    nil, 
+    {}
+  )
+
+  self:RestorePosition()
 end
 
 -- Event handler callback function, initialize addon after
@@ -32,13 +51,20 @@ function MaarselokTracker.OnPlayerCombatState(event, inCombat)
     -- Combat state has changed, change store
     MaarselokTracker.inCombat = inCombat
 
-    if inCombat then
-      d("Entering combat.")
-    else
-      d("Exiting combat.")
-    end
+    -- if inCombat then
+    --   d("Entering combat.")
+    -- else
+    --   d("Exiting combat.")
+    -- end
 
+    MaarselokTrackerIndicator:SetHidden(not inCombat)
   end
+end
+
+-- Callback to handle movement stop
+function MaarselokTracker.OnIndicatorMoveStop()
+  MaarselokTracker.savedVariables.left = MaarselokTrackerIndicator:GetLeft()
+  MaarselokTracker.savedVariables.top = MaarselokTrackerIndicator:GetTop()
 end
 
 -- Register event listener with namespace, event, and callback

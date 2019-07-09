@@ -1,4 +1,6 @@
 ## Title: MaarselokTracker Addon
 ## APIVersion: 100025
+## SavedVariables: MaarselokTrackerSavedVariables
 
 MaarselokTracker.lua
+MaarselokTracker.xml
