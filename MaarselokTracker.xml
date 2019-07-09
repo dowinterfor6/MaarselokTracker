@@ -1,0 +1,22 @@
+<!-- Wrapper for XML used for ESO UI -->
+<GuiXml>
+  <!-- Contains control definitions -->
+  <Controls>
+    <!-- Control that isn't a child -->
+    <TopLevelControl name="MaarselokTrackerIndicator">
+      <!-- Size of control, or use width/height -->
+      <Dimensions x="200" y="25" />
+      <!-- Relative positioning, currently a little above center -->
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+
+      <!-- Child control container -->
+      <Controls>
+        <!-- Text to render as part of UI -->
+        <Label name="$(parent)Label" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Fighting!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
