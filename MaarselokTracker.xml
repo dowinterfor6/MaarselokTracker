@@ -1,28 +1,18 @@
-<!-- Wrapper for XML used for ESO UI -->
 <GuiXml>
-  <!-- Contains control definitions -->
   <Controls>
-    <!-- Control that isn't a child -->
     <TopLevelControl name="MaarselokTrackerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
-      <!-- Size of control, or use width/height -->
       <Dimensions x="200" y="25" />
-      <!-- Relative positioning, currently a little above center -->
       <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
 
-      <!-- Check for in combat reloadui -->
       <OnInitialized>
-        <!-- Lua code injection -->
         MaarselokTrackerIndicator:SetHidden(not IsUnitInCombat("player"))
       </OnInitialized>
 
-      <!-- Saving movement with callback -->
       <OnMoveStop>
         MaarselokTracker.OnIndicatorMoveStop()
       </OnMoveStop>
 
-      <!-- Child control container -->
       <Controls>
-        <!-- Text to render timer -->
         <Label name="$(parent)Timer" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
             wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="0.0">
           <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
