@@ -79,6 +79,7 @@ function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _
   MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
   MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
   MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
+  MaarselokTrackerIndicatorNotification:SetHidden(true)
   EVENT_MANAGER:RegisterForUpdate(
     MaarselokTracker.NAME,
     MaarselokTracker.UPDATE_INTERVAL,
@@ -101,6 +102,7 @@ function MaarselokTracker.countDown()
     MaarselokTrackerIndicatorTimer:SetText(
       string.format("%.1f", MaarselokTracker.timer)
     )
+    MaarselokTrackerIndicatorNotification:SetHidden(false)
   end
 end
 
