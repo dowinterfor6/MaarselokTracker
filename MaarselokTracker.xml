@@ -22,15 +22,10 @@
 
       <!-- Child control container -->
       <Controls>
-        <!-- Text to render as part of UI -->
-        <Label name="$(parent)Label" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
-            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Fighting!">
-          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
-        </Label>
         <!-- Text to render timer -->
         <Label name="$(parent)Timer" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
             wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="0.0">
-          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-20" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
         </Label>
       </Controls>
     </TopLevelControl>

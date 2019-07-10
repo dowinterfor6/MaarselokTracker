@@ -6,6 +6,7 @@ MaarselokTracker.name = "MaarselokTracker"
 MaarselokTracker.procCooldown = 7
 MaarselokTracker.timer = 0
 MaarselokTracker.UPDATE_INTERVAL = 0.1 
+MaarselokTracker.MAARSELOK_ID = 126941
 
 -- Restore saved position from savedVariables
 function MaarselokTracker:RestorePosition()
@@ -29,9 +30,15 @@ function MaarselokTracker:Initialize()
   )
 
   EVENT_MANAGER:RegisterForEvent(MaarselokTracker.name, EVENT_COMBAT_EVENT, MaarselokTracker.OnCombatEvent)
+  EVENT_MANAGER:AddFilterForEvent(
+    MaarselokTracker.name, 
+    EVENT_COMBAT_EVENT, 
+    REGISTER_FILTER_ABILITY_ID, 
+    MaarselokTracker.MAARSELOK_ID
+  )
   -- Filter for the right id eventually
 
-  -- Initialie saved variables
+  -- Initialize saved variables
   self.savedVariables = ZO_SavedVars:NewAccountWide(
     "MaarselokTrackerSavedVariables", 
     1, 
@@ -57,12 +64,6 @@ function MaarselokTracker.OnPlayerCombatState(event, inCombat)
     -- Combat state has changed, change store
     MaarselokTracker.inCombat = inCombat
 
-    -- if inCombat then
-    --   d("Entering combat.")
-    -- else
-    --   d("Exiting combat.")
-    -- end
-
     MaarselokTrackerIndicator:SetHidden(not inCombat)
   end
 end
@@ -77,25 +78,7 @@ end
 function MaarselokTracker.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
 -- Use this template when done debugging
 -- function MaarselokTracker.OnCombatEvent(_, _, _) etc
-  -- eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId
-  
-  -- d("result=" .. tostring(result) .. "; isError=" .. tostring(isError) .. "; abilityName=" .. tostring(abilityName)
-  --         .. "; abilityGraphic=" .. tostring(abilityGraphic) .. "; abilityActionSlotType=" .. tostring(abilityActionSlotType)
-  --         .. "; sourceName=" .. tostring(sourceName) .. "; sourceType=" .. tostring(sourceType) .. "; targetName=" .. tostring(targetName)
-  --         .. "; targetType=" .. tostring(targetType) .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
-  --         .. "; damageType=" .. tostring(damageType) .. "; log=" .. tostring(log) .. "; sourceUnitId=" .. tostring(sourceUnitId)
-  --         .. "; targetUnitId=" .. tostring(targetUnitId) .. "; abilityId=" .. tostring(abilityId))
-  -- d("------------")
-
-  -- d("result=" .. tostring(result) .. "; abilityName=" .. tostring(abilityName)
-  --             .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
-  --             .. "; damageType=" .. tostring(damageType) .. "; abilityId=" .. tostring(abilityId))
-  -- d("------------")
-
-  -- MaarselokTrackerIndicatorLabel:SetText(abilityName)
-
-  -- -- If it is maarselok
-  if abilityId == 126941 then
+  -- if abilityId == 126941 then
     MaarselokTracker.timer = MaarselokTracker.procCooldown
     MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
     EVENT_MANAGER:RegisterForUpdate(
@@ -103,21 +86,21 @@ function MaarselokTracker.OnCombatEvent(eventCode, result, isError, abilityName,
       MaarselokTracker.UPDATE_INTERVAL,
       MaarselokTracker.countDown
     )
-  end
+  -- end
 end
 
 -- Count down the timer
 function MaarselokTracker.countDown()
+  MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
   if MaarselokTracker.timer > 0 then
-    d(MaarselokTracker.timer)
     MaarselokTracker.timer = MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 10)
   else
     EVENT_MANAGER:UnregisterForUpdate(
       MaarselokTracker.name
     )
     MaarselokTracker.timer = 0
+    MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
   end
-  MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
 end
 
 -- Register event listener with namespace, event, and callback
