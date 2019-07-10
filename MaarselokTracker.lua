@@ -1,9 +1,9 @@
 -- Create namespace with top level table
 MaarselokTracker = {}
 
--- Constants
-MaarselokTracker.name = "MaarselokTracker"
-MaarselokTracker.procCooldown = 7
+-- Namespace varaiables
+MaarselokTracker.NAME = "MaarselokTracker"
+MaarselokTracker.PROC_COOLDOWN = 7
 MaarselokTracker.timer = 0
 MaarselokTracker.UPDATE_INTERVAL = 0.1 
 MaarselokTracker.MAARSELOK_ID = 126941
@@ -24,14 +24,14 @@ function MaarselokTracker:Initialize()
 
   -- Register combat change event
   EVENT_MANAGER:RegisterForEvent(
-    self.name, 
+    MaarselokTracker.NAME, 
     EVENT_PLAYER_COMBAT_STATE, 
     self.OnPlayerCombatState
   )
 
-  EVENT_MANAGER:RegisterForEvent(MaarselokTracker.name, EVENT_COMBAT_EVENT, MaarselokTracker.OnCombatEvent)
+  EVENT_MANAGER:RegisterForEvent(MaarselokTracker.NAME, EVENT_COMBAT_EVENT, MaarselokTracker.OnCombatEvent)
   EVENT_MANAGER:AddFilterForEvent(
-    MaarselokTracker.name, 
+    MaarselokTracker.NAME, 
     EVENT_COMBAT_EVENT, 
     REGISTER_FILTER_ABILITY_ID, 
     MaarselokTracker.MAARSELOK_ID
@@ -53,7 +53,7 @@ end
 -- resources are loaded
 function MaarselokTracker.OnAddOnLoaded(event, addonName)
   -- EVENT_ADD_ON_LOADED fires for each addon, check for own
-  if addonName == MaarselokTracker.name then
+  if addonName == MaarselokTracker.NAME then
     MaarselokTracker:Initialize()
   end
 end
@@ -74,34 +74,39 @@ function MaarselokTracker.OnIndicatorMoveStop()
   MaarselokTracker.savedVariables.top = MaarselokTrackerIndicator:GetTop()
 end
 
--- Callback for checking MaarselokAbilityId
-function MaarselokTracker.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
--- Use this template when done debugging
--- function MaarselokTracker.OnCombatEvent(_, _, _) etc
-  -- if abilityId == 126941 then
-    MaarselokTracker.timer = MaarselokTracker.procCooldown
-    MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
-    EVENT_MANAGER:RegisterForUpdate(
-      MaarselokTracker.name,
-      MaarselokTracker.UPDATE_INTERVAL,
-      MaarselokTracker.countDown
-    )
-  -- end
+-- Callback for starting cooldown
+function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
+  MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
+  MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
+  MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
+  EVENT_MANAGER:RegisterForUpdate(
+    MaarselokTracker.NAME,
+    MaarselokTracker.UPDATE_INTERVAL,
+    MaarselokTracker.countDown
+  )
 end
 
 -- Count down the timer
 function MaarselokTracker.countDown()
   MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
   if MaarselokTracker.timer > 0 then
-    MaarselokTracker.timer = MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 10)
+    MaarselokTracker.timer = 
+      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 10)
   else
     EVENT_MANAGER:UnregisterForUpdate(
-      MaarselokTracker.name
+      MaarselokTracker.NAME
     )
     MaarselokTracker.timer = 0
-    MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
+    MaarselokTrackerIndicatorTimer:SetColor(0,1,0)
+    MaarselokTrackerIndicatorTimer:SetText(
+      string.format("%.1f", MaarselokTracker.timer)
+    )
   end
 end
 
 -- Register event listener with namespace, event, and callback
-EVENT_MANAGER:RegisterForEvent(MaarselokTracker.name, EVENT_ADD_ON_LOADED, MaarselokTracker.OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent(
+  MaarselokTracker.NAME, 
+  EVENT_ADD_ON_LOADED, 
+  MaarselokTracker.OnAddOnLoaded
+)
