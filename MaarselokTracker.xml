@@ -3,7 +3,7 @@
   <!-- Contains control definitions -->
   <Controls>
     <!-- Control that isn't a child -->
-    <TopLevelControl name="MaarselokTrackerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+    <TopLevelControl name="MaarselokTrackerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
       <!-- Size of control, or use width/height -->
       <Dimensions x="200" y="25" />
       <!-- Relative positioning, currently a little above center -->
@@ -12,7 +12,7 @@
       <!-- Check for in combat reloadui -->
       <OnInitialized>
         <!-- Lua code injection -->
-        MaarselokTrackerIndicator:SetHidden(not IsUnitInCombat('player'))
+        MaarselokTrackerIndicator:SetHidden(not IsUnitInCombat("player"))
       </OnInitialized>
 
       <!-- Saving movement with callback -->

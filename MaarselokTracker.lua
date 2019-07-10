@@ -5,7 +5,7 @@ MaarselokTracker = {}
 MaarselokTracker.name = "MaarselokTracker"
 MaarselokTracker.procCooldown = 7
 MaarselokTracker.timer = 0
-MaarselokTracker.UPDATE_INTERVAL = 100 
+MaarselokTracker.UPDATE_INTERVAL = 0.1 
 
 -- Restore saved position from savedVariables
 function MaarselokTracker:RestorePosition()
@@ -79,39 +79,43 @@ function MaarselokTracker.OnCombatEvent(eventCode, result, isError, abilityName,
 -- function MaarselokTracker.OnCombatEvent(_, _, _) etc
   -- eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId
   
-  d("result=" .. tostring(result) .. "; isError=" .. tostring(isError) .. "; abilityName=" .. tostring(abilityName)
-          .. "; abilityGraphic=" .. tostring(abilityGraphic) .. "; abilityActionSlotType=" .. tostring(abilityActionSlotType)
-          .. "; sourceName=" .. tostring(sourceName) .. "; sourceType=" .. tostring(sourceType) .. "; targetName=" .. tostring(targetName)
-          .. "; targetType=" .. tostring(targetType) .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
-          .. "; damageType=" .. tostring(damageType) .. "; log=" .. tostring(log) .. "; sourceUnitId=" .. tostring(sourceUnitId)
-          .. "; targetUnitId=" .. tostring(targetUnitId) .. "; abilityId=" .. tostring(abilityId))
-  d("------------")
+  -- d("result=" .. tostring(result) .. "; isError=" .. tostring(isError) .. "; abilityName=" .. tostring(abilityName)
+  --         .. "; abilityGraphic=" .. tostring(abilityGraphic) .. "; abilityActionSlotType=" .. tostring(abilityActionSlotType)
+  --         .. "; sourceName=" .. tostring(sourceName) .. "; sourceType=" .. tostring(sourceType) .. "; targetName=" .. tostring(targetName)
+  --         .. "; targetType=" .. tostring(targetType) .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
+  --         .. "; damageType=" .. tostring(damageType) .. "; log=" .. tostring(log) .. "; sourceUnitId=" .. tostring(sourceUnitId)
+  --         .. "; targetUnitId=" .. tostring(targetUnitId) .. "; abilityId=" .. tostring(abilityId))
+  -- d("------------")
 
-  d("result=" .. tostring(result) .. "; abilityName=" .. tostring(abilityName)
-              .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
-              .. "; damageType=" .. tostring(damageType) .. "; abilityId=" .. tostring(abilityId))
-  d("------------")
+  -- d("result=" .. tostring(result) .. "; abilityName=" .. tostring(abilityName)
+  --             .. "; hitValue=" .. tostring(hitValue) .. "; powerType=" .. tostring(powerType)
+  --             .. "; damageType=" .. tostring(damageType) .. "; abilityId=" .. tostring(abilityId))
+  -- d("------------")
 
-  MaarselokTrackerIndicatorLabel:SetText(abilityName)
+  -- MaarselokTrackerIndicatorLabel:SetText(abilityName)
 
   -- -- If it is maarselok
-  -- MaarselokTracker.timer = MaarselokTracker.procCooldown
-  -- MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
-  -- EVENT_MANAGER:RegisterForUpdate(
-  --   MaarselokTracker.name,
-  --   MaarselokTracker.UPDATE_INTERVAL,
-  --   MaarselokTracker.countDown
-  -- )
+  if abilityId == 126941 then
+    MaarselokTracker.timer = MaarselokTracker.procCooldown
+    MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
+    EVENT_MANAGER:RegisterForUpdate(
+      MaarselokTracker.name,
+      MaarselokTracker.UPDATE_INTERVAL,
+      MaarselokTracker.countDown
+    )
+  end
 end
 
 -- Count down the timer
 function MaarselokTracker.countDown()
   if MaarselokTracker.timer > 0 then
-    MaarselokTracker.timer -= MaarselokTracker.UPDATE_INTERVAL
+    d(MaarselokTracker.timer)
+    MaarselokTracker.timer = MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 10)
   else
-    MaarselokTracker:UnregisterForUpdate(
+    EVENT_MANAGER:UnregisterForUpdate(
       MaarselokTracker.name
     )
+    MaarselokTracker.timer = 0
   end
   MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
 end
