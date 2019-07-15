@@ -36,7 +36,12 @@ function MaarselokTracker:Initialize()
     REGISTER_FILTER_ABILITY_ID, 
     MaarselokTracker.MAARSELOK_ID
   )
-  -- Filter for the right id eventually
+  EVENT_MANAGER:AddFilterForEvent(
+    MaarselokTracker.NAME,
+    EVENT_COMBAT_EVENT,
+    REGISTER_FILTER_UNIT_TAG,
+    "player"
+  )
 
   -- Initialize saved variables
   self.savedVariables = ZO_SavedVars:NewAccountWide(
@@ -53,9 +58,11 @@ end
 -- resources are loaded
 function MaarselokTracker.OnAddOnLoaded(event, addonName)
   -- EVENT_ADD_ON_LOADED fires for each addon, check for own
-  if addonName == MaarselokTracker.NAME then
-    MaarselokTracker:Initialize()
-  end
+  if addonName ~= MaarselokTracker.NAME then return end
+
+  -- Unregister addon load listener
+  EventManager:UnregisterForEvent(MaarselokTracker.NAME, EVENT_ADD_ON_LOADED)
+  MaarselokTracker:Initialize()
 end
 
 -- Callback for player state change
@@ -80,9 +87,12 @@ end
 function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
   MaarselokTrackerIndicator:SetHidden(false)
   MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
+
   MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
   MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
   MaarselokTrackerIndicatorNotification:SetHidden(true)
+
+  EVENT_MANAGER:UnregisterForUpdate(MaarselokTracker.NAME)
   EVENT_MANAGER:RegisterForUpdate(
     MaarselokTracker.NAME,
     MaarselokTracker.UPDATE_INTERVAL,
