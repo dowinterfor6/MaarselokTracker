@@ -64,7 +64,9 @@ function MaarselokTracker.OnPlayerCombatState(event, inCombat)
     -- Combat state has changed, change store
     MaarselokTracker.inCombat = inCombat
 
-    MaarselokTrackerIndicator:SetHidden(not inCombat)
+    if inCombat == false then
+      MaarselokTrackerIndicator:SetHidden(not inCombat)
+    end
   end
 end
 
@@ -76,6 +78,7 @@ end
 
 -- Callback for starting cooldown
 function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
+  MaarselokTrackerIndicator:SetHidden(false)
   MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
   MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
   MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
