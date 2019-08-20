@@ -36,7 +36,12 @@ function MaarselokTracker:Initialize()
     REGISTER_FILTER_ABILITY_ID, 
     MaarselokTracker.MAARSELOK_ID
   )
-  -- Filter for the right id eventually
+  EVENT_MANAGER:AddFilterForEvent(
+    MaarselokTracker.NAME,
+    EVENT_COMBAT_EVENT,
+    REGISTER_FILTER_UNIT_TAG,
+    "player"
+  )
 
   -- Initialize saved variables
   self.savedVariables = ZO_SavedVars:NewAccountWide(
@@ -53,9 +58,11 @@ end
 -- resources are loaded
 function MaarselokTracker.OnAddOnLoaded(event, addonName)
   -- EVENT_ADD_ON_LOADED fires for each addon, check for own
-  if addonName == MaarselokTracker.NAME then
-    MaarselokTracker:Initialize()
-  end
+  if addonName ~= MaarselokTracker.NAME then return end
+
+  -- Unregister addon load listener
+  EVENT_MANAGER:UnregisterForEvent(MaarselokTracker.NAME, EVENT_ADD_ON_LOADED)
+  MaarselokTracker:Initialize()
 end
 
 -- Callback for player state change
@@ -79,15 +86,20 @@ end
 -- Callback for starting cooldown
 function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
   MaarselokTrackerIndicator:SetHidden(false)
-  MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
-  MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
-  MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
-  MaarselokTrackerIndicatorNotification:SetHidden(true)
-  EVENT_MANAGER:RegisterForUpdate(
-    MaarselokTracker.NAME,
-    MaarselokTracker.UPDATE_INTERVAL,
-    MaarselokTracker.countDown
-  )
+  if MaarselokTracker.timer == 0 then 
+    MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
+
+    MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
+    MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
+    MaarselokTrackerIndicatorNotification:SetHidden(true)
+
+    EVENT_MANAGER:UnregisterForUpdate(MaarselokTracker.NAME)
+    EVENT_MANAGER:RegisterForUpdate(
+      MaarselokTracker.NAME,
+      MaarselokTracker.UPDATE_INTERVAL,
+      MaarselokTracker.countDown
+    )
+  end
 end
 
 -- Count down the timer
@@ -95,7 +107,7 @@ function MaarselokTracker.countDown()
   MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
   if MaarselokTracker.timer > 0 then
     MaarselokTracker.timer = 
-      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 10)
+      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 6)
   else
     EVENT_MANAGER:UnregisterForUpdate(
       MaarselokTracker.NAME
