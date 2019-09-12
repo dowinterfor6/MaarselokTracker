@@ -61,11 +61,7 @@ function MaarselokTracker.OnAddOnLoaded(event, addonName)
   if addonName ~= MaarselokTracker.NAME then return end
 
   -- Unregister addon load listener
-<<<<<<< HEAD:MaarselokTracker/MaarselokTracker.lua
   EVENT_MANAGER:UnregisterForEvent(MaarselokTracker.NAME, EVENT_ADD_ON_LOADED)
-=======
-  EventManager:UnregisterForEvent(MaarselokTracker.NAME, EVENT_ADD_ON_LOADED)
->>>>>>> master:MaarselokTracker/MaarselokTracker.lua
   MaarselokTracker:Initialize()
 end
 
@@ -90,7 +86,6 @@ end
 -- Callback for starting cooldown
 function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
   MaarselokTrackerIndicator:SetHidden(false)
-<<<<<<< HEAD:MaarselokTracker/MaarselokTracker.lua
   if MaarselokTracker.timer == 0 then 
     MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
 
@@ -105,20 +100,6 @@ function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _
       MaarselokTracker.countDown
     )
   end
-=======
-  MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
-
-  MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
-  MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
-  MaarselokTrackerIndicatorNotification:SetHidden(true)
-
-  EVENT_MANAGER:UnregisterForUpdate(MaarselokTracker.NAME)
-  EVENT_MANAGER:RegisterForUpdate(
-    MaarselokTracker.NAME,
-    MaarselokTracker.UPDATE_INTERVAL,
-    MaarselokTracker.countDown
-  )
->>>>>>> master:MaarselokTracker/MaarselokTracker.lua
 end
 
 -- Count down the timer
