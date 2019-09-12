@@ -107,7 +107,7 @@ function MaarselokTracker.countDown()
   MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
   if MaarselokTracker.timer > 0 then
     MaarselokTracker.timer = 
-      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 6)
+      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 3)
   else
     EVENT_MANAGER:UnregisterForUpdate(
       MaarselokTracker.NAME
