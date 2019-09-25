@@ -3,10 +3,11 @@ MaarselokTracker = {}
 
 -- Namespace varaiables
 MaarselokTracker.NAME = "MaarselokTracker"
-MaarselokTracker.PROC_COOLDOWN = 7
-MaarselokTracker.timer = 0
-MaarselokTracker.UPDATE_INTERVAL = 0.1 
+MaarselokTracker.PROC_COOLDOWN = 7000 -- ms
+MaarselokTracker.timeOfProc = 0
+MaarselokTracker.UPDATE_INTERVAL = 100 -- ms
 MaarselokTracker.MAARSELOK_ID = 126941
+MaarselokTracker.onCooldown = false
 
 -- Restore saved position from savedVariables
 function MaarselokTracker:RestorePosition()
@@ -39,8 +40,8 @@ function MaarselokTracker:Initialize()
   EVENT_MANAGER:AddFilterForEvent(
     MaarselokTracker.NAME,
     EVENT_COMBAT_EVENT,
-    REGISTER_FILTER_UNIT_TAG,
-    "player"
+    REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,
+    COMBAT_UNIT_TYPE_PLAYER
   )
 
   -- Initialize saved variables
@@ -84,38 +85,36 @@ function MaarselokTracker.OnIndicatorMoveStop()
 end
 
 -- Callback for starting cooldown
-function MaarselokTracker.OnCombatEvent(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _)
+function MaarselokTracker.OnCombatEvent(setKey, _, result, _, abilityName, _, _, _, _, _, _, _, _, _, _, _, abilityId)
   MaarselokTrackerIndicator:SetHidden(false)
-  if MaarselokTracker.timer == 0 then 
-    MaarselokTracker.timer = MaarselokTracker.PROC_COOLDOWN
 
-    MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
-    MaarselokTrackerIndicatorTimer:SetText(MaarselokTracker.timer)
-    MaarselokTrackerIndicatorNotification:SetHidden(true)
+  if MaarselokTracker.onCooldown == true then return end
 
-    EVENT_MANAGER:UnregisterForUpdate(MaarselokTracker.NAME)
-    EVENT_MANAGER:RegisterForUpdate(
-      MaarselokTracker.NAME,
-      MaarselokTracker.UPDATE_INTERVAL,
-      MaarselokTracker.countDown
-    )
-  end
+  MaarselokTracker.timeOfProc = GetGameTimeMilliseconds()
+  MaarselokTracker.onCooldown = true
+  MaarselokTrackerIndicatorTimer:SetColor(1,0,0)
+  MaarselokTrackerIndicatorNotification:SetHidden(true)
+
+  EVENT_MANAGER:RegisterForUpdate(
+    MaarselokTracker.NAME,
+    MaarselokTracker.UPDATE_INTERVAL,
+    MaarselokTracker.countDown
+  )
 end
 
 -- Count down the timer
 function MaarselokTracker.countDown()
-  MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", MaarselokTracker.timer))
-  if MaarselokTracker.timer > 0 then
-    MaarselokTracker.timer = 
-      MaarselokTracker.timer - (MaarselokTracker.UPDATE_INTERVAL / 6)
-  else
+  countdown = (MaarselokTracker.timeOfProc + MaarselokTracker.PROC_COOLDOWN - GetGameTimeMilliseconds()) / 1000
+  MaarselokTrackerIndicatorTimer:SetText(string.format("%.1f", countdown))
+  
+  if countdown <= 0 then
     EVENT_MANAGER:UnregisterForUpdate(
       MaarselokTracker.NAME
     )
-    MaarselokTracker.timer = 0
+    MaarselokTracker.onCooldown = false
     MaarselokTrackerIndicatorTimer:SetColor(0,1,0)
     MaarselokTrackerIndicatorTimer:SetText(
-      string.format("%.1f", MaarselokTracker.timer)
+      string.format("%.1f", "0.0")
     )
     MaarselokTrackerIndicatorNotification:SetHidden(false)
   end
